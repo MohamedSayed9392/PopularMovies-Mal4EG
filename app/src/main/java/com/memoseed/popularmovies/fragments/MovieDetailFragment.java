@@ -115,7 +115,7 @@ public class MovieDetailFragment extends Fragment {
                 if (p.getBoolean(movieItem.getId(), false)) {
                     fab.setImageResource(R.drawable.fav_unchecked);
                     p.setBoolean(false, movieItem.getId());
-                    if (MainActivity.favourite) {
+                    if (UTils.favourite) {
                         MainActivity.moviesRViewAdapter.removeMovie(movieItem);
                     }
                     UTils.editMovieFav(movieItem, false,p);

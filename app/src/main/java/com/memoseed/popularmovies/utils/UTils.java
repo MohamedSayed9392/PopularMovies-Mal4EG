@@ -27,6 +27,8 @@ import java.util.List;
  */
 public class UTils {
 
+    public static boolean favourite = false, pop_movies = true, top_rated = false;
+
     public static boolean isOnline(Context context) {
         boolean connected = false;
 

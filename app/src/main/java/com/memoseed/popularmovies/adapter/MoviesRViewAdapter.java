@@ -103,7 +103,7 @@ public class MoviesRViewAdapter extends RecyclerView.Adapter<MoviesRViewAdapter.
                     UTils.editMovieFav(movie,true,p);
                 }else{
                     UTils.editMovieFav(movie,false,p);
-                    if(MainActivity.favourite){
+                    if(UTils.favourite){
                         listMovies.remove(movie);
                         notifyDataSetChanged();
                     }

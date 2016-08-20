@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     List<MovieItem> listMovies = new ArrayList<>();
     public static MoviesRViewAdapter moviesRViewAdapter;
 
-    public static boolean favourite = false, pop_movies = true, top_rated = false;
     int listPosition = -1;
 
     public static boolean twoPane = false;
@@ -82,8 +81,16 @@ public class MainActivity extends AppCompatActivity {
         rViewMovies.setLayoutManager(gridPortrait);
         rViewMovies.setAdapter(moviesRViewAdapter);
 
-        getMovies(urlPopular, true);
-
+        if(UTils.favourite){
+            setTitle(getString(R.string.Fav_title));
+            moviesRViewAdapter.resetMovies(UTils.getListMovies("fav_list",p));
+        } else if (UTils.pop_movies) {
+            getMovies(urlPopular, true);
+        } else if (UTils.top_rated) {
+            getMovies(urlTopRated, false);
+        }else {
+            getMovies(urlPopular, true);
+        }
 
     }
 
@@ -124,17 +131,17 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_popular:
                 getMovies(urlPopular, true);
-                pop_movies = true;top_rated = false;favourite = false;
+                UTils.pop_movies = true;UTils.top_rated = false;UTils.favourite = false;
 
                 return true;
             case R.id.action_top_rated:
                 getMovies(urlTopRated, false);
-                pop_movies = false;top_rated = true;favourite = false;
+                UTils.pop_movies = false;UTils.top_rated = true;UTils.favourite = false;
 
                 return true;
             case R.id.action_fav:
                 moviesRViewAdapter.resetMovies(UTils.getListMovies("fav_list",p));
-                favourite = true;
+                UTils.favourite = true;
                 setTitle(getString(R.string.Fav_title));
 
                 return true;
@@ -146,9 +153,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (favourite && pop_movies) {
+        if (UTils.favourite && UTils.pop_movies) {
             getMovies(urlPopular, true);
-        } else if (favourite && top_rated) {
+        } else if (UTils.favourite && UTils.top_rated) {
             getMovies(urlTopRated, false);
         } else {
             super.onBackPressed();
@@ -157,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getMovies(String url, final boolean popular) {
 
-        favourite = false;
+        UTils.favourite = false;
 
         //get Cashed
         if (popular) {
@@ -170,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
         //get Online
         if (UTils.isOnline(this)) {
-            UTils.showProgressDialog("Loading ...", "Please wait", pD);
+            UTils.showProgressDialog(getString(R.string.progress_title), getString(R.string.progress_message), pD);
             StringRequest getTopRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
