@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+    <string name="title_activity_movie">MovieActivity</string>
+
+    <string name="imdp_api_key">\?api_key=244e0b88ca3ed893d6b9181861e71988</string>
+    <string name="imdp_api_base_url">http://api.themoviedb.org/3/movie/</string>
+    <string name="popular_movies">popular</string>
+    <string name="top_rated_movies">top_rated</string>
+
+    <string name="imdp_api_images_url">http://image.tmdb.org/t/p/</string>
+    <string name="imdp_api_images_size_0">w92</string>
+    <string name="imdp_api_images_size_1">w154</string>
+    <string name="imdp_api_images_size_2">w185</string>
+    <string name="imdp_api_images_size_3">w342</string>
+    <string name="imdp_api_images_size_4">w500</string>
+    <string name="imdp_api_images_size_5">w780</string>
+    <string name="imdp_api_images_size_6">original</string>
+
+    <string name="imdp_api_videos_url">/videos</string>
+    <string name="imdp_api_revies_url">/reviews</string>
+
+    <string name="action_share">Share</string>
+    <string name="action_top_rated">Top Rated</string>
+    <string name="action_popular">Popular</string>
+    <string name="action_fav">Favourite</string>
+    <string name="Popular_title">PopularMovies</string>
+    <string name="Top_title">TopRated</string>
+    <string name="Fav_title">Favourite</string>
+    <string name="NoInternet">No Internet Connectivity</string>
+    <string name="ServerError">Server Error</string>
+
+</resources>
