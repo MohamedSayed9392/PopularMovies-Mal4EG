@@ -1,7 +1,9 @@
 package com.memoseed.popularmovies.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -70,7 +72,7 @@ public class MovieDetailFragment extends Fragment {
 
         CoordinatorLayout llLayout = (CoordinatorLayout) inflater.inflate(R.layout.activity_movie, container, false);
 
-        p = new AppParameters(getActivity());
+        p = new AppParameters(mContext);
 
         fab = (FloatingActionButton) llLayout.findViewById(R.id.fab);
 
@@ -97,10 +99,10 @@ public class MovieDetailFragment extends Fragment {
             TextView txtMovieTitle = (TextView) llLayout.findViewById(R.id.txtMovieTitle);
             txtMovieTitle.setText(movieItem.getTitle());
         } else {
-            ((MovieActivityContainer) getActivity()).setSupportActionBar(toolbar);
-            ((MovieActivityContainer) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            movieItem = (MovieItem) getActivity().getIntent().getExtras().getSerializable("movie");
-            getActivity().setTitle(movieItem.getTitle());
+            ((MovieActivityContainer) mContext).setSupportActionBar(toolbar);
+            ((MovieActivityContainer) mContext).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            movieItem = (MovieItem) mContext.getIntent().getExtras().getSerializable("movie");
+            mContext.setTitle(movieItem.getTitle());
         }
 
         if (p.getBoolean(movieItem.getId(), false)) {
@@ -136,7 +138,7 @@ public class MovieDetailFragment extends Fragment {
         txtRate.setText(movieItem.getVote_average() + "/10 ★");
         txtOverview.setText(movieItem.getOverview());
 
-        Glide.with(getActivity()).load(getResources().getString(R.string.imdp_api_images_url) +
+        Glide.with(mContext).load(getResources().getString(R.string.imdp_api_images_url) +
                 getResources().getString(R.string.imdp_api_images_size_5) +
                 movieItem.getBackdrop_path())
                 .listener(GlidePalette.with(getResources().getString(R.string.imdp_api_images_url) +
@@ -153,8 +155,8 @@ public class MovieDetailFragment extends Fragment {
                                 })).into(imCover);
 
 
-        trailersRViewAdapter = new TrailersRViewAdapter(getActivity(), listTrailers);
-        rViewTrailers.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        trailersRViewAdapter = new TrailersRViewAdapter(mContext, listTrailers);
+        rViewTrailers.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
         rViewTrailers.setAdapter(trailersRViewAdapter);
         getTrailers(getResources().getString(R.string.imdp_api_base_url) +
                 movieItem.getId() +
@@ -165,6 +167,7 @@ public class MovieDetailFragment extends Fragment {
                 movieItem.getId() +
                 getResources().getString(R.string.imdp_api_revies_url) +
                 getResources().getString(R.string.imdp_api_key));
+
 
         rlTryAgainR.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,6 +194,24 @@ public class MovieDetailFragment extends Fragment {
         return llLayout;
     }
 
+    private Activity mContext;
+
+    // called for API equal or above 23
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = (Activity) context;
+    }
+
+    /*
+    * Deprecated on API 23
+    */
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.mContext = activity;
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_movie, menu);
@@ -200,7 +221,7 @@ public class MovieDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_share:
-                UTils.shareText(getActivity(), "https://www.themoviedb.org/movie/" + movieItem.getId(), "Share Movie Data");
+                UTils.shareText(mContext, "https://www.themoviedb.org/movie/" + movieItem.getId(), "Share Movie Data");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -208,7 +229,7 @@ public class MovieDetailFragment extends Fragment {
     }
 
     private void getTrailers(String url) {
-        if (UTils.isOnline(getActivity())) {
+        if (UTils.isOnline(mContext)) {
             StringRequest getTrailersRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -234,20 +255,20 @@ public class MovieDetailFragment extends Fragment {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getActivity(), R.string.ServerError, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.ServerError, Toast.LENGTH_SHORT).show();
                 }
             });
 
-            Volley.newRequestQueue(getActivity()).add(getTrailersRequest);
+            Volley.newRequestQueue(mContext).add(getTrailersRequest);
         } else {
             rlProgressT.setVisibility(View.GONE);
             rlTryAgainT.setVisibility(View.VISIBLE);
-            Toast.makeText(getActivity(), R.string.NoInternet, Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, R.string.NoInternet, Toast.LENGTH_LONG).show();
         }
     }
 
     private void getReviews(String url) {
-        if (UTils.isOnline(getActivity())) {
+        if (UTils.isOnline(mContext)) {
             StringRequest getReviewsRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -277,20 +298,20 @@ public class MovieDetailFragment extends Fragment {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getActivity(), R.string.ServerError, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.ServerError, Toast.LENGTH_SHORT).show();
                 }
             });
 
-            Volley.newRequestQueue(getActivity()).add(getReviewsRequest);
+            Volley.newRequestQueue(mContext).add(getReviewsRequest);
         } else {
             rlProgressR.setVisibility(View.GONE);
             rlTryAgainR.setVisibility(View.VISIBLE);
-            Toast.makeText(getActivity(), R.string.NoInternet, Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, R.string.NoInternet, Toast.LENGTH_LONG).show();
         }
     }
 
     public View reviewView(String author, String review) {
-        View rowView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_review, null);
+        View rowView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item_review, null);
 
         TextView txtAuthor = (TextView) rowView.findViewById(R.id.txtAuthor);
         TextView txtReview = (TextView) rowView.findViewById(R.id.txtReview);
