@@ -122,35 +122,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(TABLE, null, values);
         db.close(); // Closing database connection
     }
-     
-    // Getting All MovieItems
-    public List<MovieItem> getAllMovieItems(String TABLE) {
-        List<MovieItem> movieItemList = new ArrayList<MovieItem>();
-        // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
- 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                MovieItem movieItem = new MovieItem(cursor.getString(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getString(4),
-                        cursor.getString(5),
-                        cursor.getString(6),
-                        cursor.getInt(7),
-                        cursor.getInt(8));
-                // Adding movieItem to list
-                movieItemList.add(movieItem);
-            } while (cursor.moveToNext());
-        }
- 
-        // return movieItem list
-        return movieItemList;
-    }
+
 
     // Getting movieItems Count
     public int getMovieItemsCount(String TABLE) {

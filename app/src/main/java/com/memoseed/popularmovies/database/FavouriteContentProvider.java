@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.memoseed.popularmovies.model.MovieItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by MohamedSayed on 4/7/2017.
  */
@@ -21,6 +26,7 @@ public class FavouriteContentProvider extends ContentProvider {
         databaseHandler = new DatabaseHandler(getContext());
         return true;
     }
+
 
     @Override
     public int delete(Uri uri, String where, String[] args) {
@@ -50,6 +56,7 @@ public class FavouriteContentProvider extends ContentProvider {
         String table =getTableName(uri);
         SQLiteDatabase database = databaseHandler.getReadableDatabase();
         Cursor cursor =database.query(table,  projection, selection, selectionArgs, null, null, sortOrder);
+
         return cursor;
     }
 

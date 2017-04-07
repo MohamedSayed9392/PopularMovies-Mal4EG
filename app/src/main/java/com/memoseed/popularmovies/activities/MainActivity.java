@@ -2,6 +2,8 @@ package com.memoseed.popularmovies.activities;
 
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 import com.memoseed.popularmovies.AppParameters;
 import com.memoseed.popularmovies.R;
 import com.memoseed.popularmovies.database.DatabaseHandler;
+import com.memoseed.popularmovies.database.FavouriteContentProvider;
 import com.memoseed.popularmovies.utils.UTils;
 import com.memoseed.popularmovies.adapter.MoviesRViewAdapter;
 import com.memoseed.popularmovies.model.MovieItem;
@@ -85,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(UTils.favourite){
             setTitle(getString(R.string.Fav_title));
-            moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_FAV_MOVIES));
+            moviesRViewAdapter.resetMovies(UTils.getAllMovieItems(this,DatabaseHandler.TABLE_FAV_MOVIES));
         } else if (UTils.pop_movies) {
             getMovies(urlPopular, true);
         } else if (UTils.top_rated) {
@@ -142,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             case R.id.action_fav:
-                moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_FAV_MOVIES));
+                moviesRViewAdapter.resetMovies(UTils.getAllMovieItems(this,DatabaseHandler.TABLE_FAV_MOVIES));
+
                 UTils.favourite = true;
                 setTitle(getString(R.string.Fav_title));
 
@@ -172,11 +176,11 @@ public class MainActivity extends AppCompatActivity {
         if (popular) {
             setTitle(getResources().getString(R.string.Popular_title));
             TABLE = DatabaseHandler.TABLE_POPULAR_MOVIES;
-            moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_POPULAR_MOVIES));
+            moviesRViewAdapter.resetMovies(UTils.getAllMovieItems(this,DatabaseHandler.TABLE_POPULAR_MOVIES));
         } else {
             setTitle(getResources().getString(R.string.Top_title));
             TABLE = DatabaseHandler.TABLE_TOP_MOVIES;
-            moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_TOP_MOVIES));
+            moviesRViewAdapter.resetMovies(UTils.getAllMovieItems(this,DatabaseHandler.TABLE_TOP_MOVIES));
         }
 
         //get Online
@@ -193,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < results.length(); i++) {
                             databaseHandler.addMovieItem(new GsonBuilder().create().fromJson(results.getJSONObject(i).toString(), MovieItem.class),TABLE);
                          }
-                        moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(TABLE));
+                        moviesRViewAdapter.resetMovies(UTils.getAllMovieItems(MainActivity.this,TABLE));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

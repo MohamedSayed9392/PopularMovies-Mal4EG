@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -17,6 +18,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.memoseed.popularmovies.AppParameters;
+import com.memoseed.popularmovies.database.DatabaseHandler;
+import com.memoseed.popularmovies.database.FavouriteContentProvider;
 import com.memoseed.popularmovies.model.MovieItem;
 
 import java.lang.reflect.Type;
@@ -139,5 +142,30 @@ public class UTils {
         return initialValues;
     }
 
+    // Getting All MovieItems
+    public static List<MovieItem> getAllMovieItems(Context context,String TABLE) {
+        Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, TABLE);
+        Cursor cursor = context.getContentResolver().query(contentUri,null, null, null,null);
 
+        List<MovieItem> movieItemList = new ArrayList<MovieItem>();
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                MovieItem movieItem = new MovieItem(cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getString(6),
+                        cursor.getInt(7),
+                        cursor.getInt(8));
+                // Adding movieItem to list
+                movieItemList.add(movieItem);
+            } while (cursor.moveToNext());
+        }
+
+        // return movieItem list
+        return movieItemList;
+    }
 }
