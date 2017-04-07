@@ -100,13 +100,13 @@ public class MoviesRViewAdapter extends RecyclerView.Adapter<MoviesRViewAdapter.
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
-                    int resultUri =  con.getContentResolver().delete(contentUri, "id = ?", new String[] { String.valueOf(movie.getId()) });
-                    Log.d(TAG,"Fav : "+String.valueOf(resultUri));
+                    Uri resultUri =  con.getContentResolver().insert(contentUri, UTils.getContentValuesOfMovie(movie));
+                    Log.d(TAG,"Fav : "+resultUri.toString());
                     Log.d(TAG,String .valueOf(new DatabaseHandler(con).getMovieItemsCount(DatabaseHandler.TABLE_FAV_MOVIES)));
                 }else{
                     Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
-                    Uri resultUri =  con.getContentResolver().insert(contentUri, UTils.getContentValuesOfMovie(movie));
-                    Log.d(TAG,"Fav : "+resultUri.toString());
+                    int resultUri =  con.getContentResolver().delete(contentUri, "id = ?", new String[] { String.valueOf(movie.getId()) });
+                    Log.d(TAG,"Fav : "+String.valueOf(resultUri));
                     Log.d(TAG,String .valueOf(new DatabaseHandler(con).getMovieItemsCount(DatabaseHandler.TABLE_FAV_MOVIES)));
 
                     if(UTils.favourite){

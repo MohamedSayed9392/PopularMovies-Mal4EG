@@ -57,9 +57,9 @@ public class MovieDetailFragment extends Fragment {
 
     String TAG = this.getClass().getSimpleName();
 
-    AppParameters p;
     MovieItem movieItem;
     List<MovieTrailers> listTrailers = new ArrayList<>();
+    DatabaseHandler databaseHandler;
 
     FloatingActionButton fab;
     ImageView imCover;
@@ -76,8 +76,7 @@ public class MovieDetailFragment extends Fragment {
 
         CoordinatorLayout llLayout = (CoordinatorLayout) inflater.inflate(R.layout.activity_movie, container, false);
 
-        p = new AppParameters(mContext);
-
+        databaseHandler = new DatabaseHandler(mContext);
         fab = (FloatingActionButton) llLayout.findViewById(R.id.fab);
 
 
@@ -109,7 +108,7 @@ public class MovieDetailFragment extends Fragment {
             mContext.setTitle(movieItem.getTitle());
         }
 
-        if (p.getBoolean(movieItem.getId(), false)) {
+        if (databaseHandler.isMovieFavouriteExist(movieItem.getId())) {
             fab.setImageResource(R.drawable.fav_checked);
         } else {
             fab.setImageResource(R.drawable.fav_unchecked);
@@ -118,21 +117,20 @@ public class MovieDetailFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (p.getBoolean(movieItem.getId(), false)) {
+                if (databaseHandler.isMovieFavouriteExist(movieItem.getId())) {
                     fab.setImageResource(R.drawable.fav_unchecked);
-                    p.setBoolean(false, movieItem.getId());
-                    if (UTils.favourite) {
-                        MainActivity.moviesRViewAdapter.removeMovie(movieItem);
-                    }
 
                     Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
                     int resultUri =  mContext.getContentResolver().delete(contentUri, "id = ?", new String[] { String.valueOf(movieItem.getId()) });
                     Log.d(TAG,"Fav : "+String.valueOf(resultUri));
                     Log.d(TAG,String .valueOf(new DatabaseHandler(mContext).getMovieItemsCount(DatabaseHandler.TABLE_FAV_MOVIES)));
+
+                    if (UTils.favourite) {
+                        MainActivity.moviesRViewAdapter.removeMovie(movieItem);
+                    }
                  //   UTils.editMovieFav(movieItem, false,p);
                 } else {
                     fab.setImageResource(R.drawable.fav_checked);
-                    p.setBoolean(true, movieItem.getId());
 
                     Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
                     Uri resultUri =  mContext.getContentResolver().insert(contentUri, UTils.getContentValuesOfMovie(movieItem));

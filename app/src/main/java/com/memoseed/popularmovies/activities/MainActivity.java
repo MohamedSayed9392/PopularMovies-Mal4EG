@@ -40,7 +40,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     String TAG = this.getClass().getSimpleName();
-    AppParameters p;
     ProgressDialog pD;
 
     RecyclerView rViewMovies;
@@ -69,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
             item_detail_container = (FrameLayout) findViewById(R.id.movie_detail_container);
         }
 
-        p = new AppParameters(this);
         pD = new ProgressDialog(this);
 
         urlPopular = getResources().getString(R.string.imdp_api_base_url) +
