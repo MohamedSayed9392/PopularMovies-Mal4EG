@@ -1,7 +1,9 @@
 package com.memoseed.popularmovies.fragments;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -37,6 +39,8 @@ import com.memoseed.popularmovies.AppParameters;
 import com.memoseed.popularmovies.R;
 import com.memoseed.popularmovies.activities.MainActivity;
 import com.memoseed.popularmovies.activities.MovieActivityContainer;
+import com.memoseed.popularmovies.database.DatabaseHandler;
+import com.memoseed.popularmovies.database.FavouriteContentProvider;
 import com.memoseed.popularmovies.utils.UTils;
 import com.memoseed.popularmovies.adapter.TrailersRViewAdapter;
 import com.memoseed.popularmovies.model.MovieItem;
@@ -120,16 +124,27 @@ public class MovieDetailFragment extends Fragment {
                     if (UTils.favourite) {
                         MainActivity.moviesRViewAdapter.removeMovie(movieItem);
                     }
-                    UTils.editMovieFav(movieItem, false,p);
+
+                    Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
+                    int resultUri =  mContext.getContentResolver().delete(contentUri, "id = ?", new String[] { String.valueOf(movieItem.getId()) });
+                    Log.d(TAG,"Fav : "+String.valueOf(resultUri));
+                    Log.d(TAG,String .valueOf(new DatabaseHandler(mContext).getMovieItemsCount(DatabaseHandler.TABLE_FAV_MOVIES)));
+                 //   UTils.editMovieFav(movieItem, false,p);
                 } else {
                     fab.setImageResource(R.drawable.fav_checked);
                     p.setBoolean(true, movieItem.getId());
-                    UTils.editMovieFav(movieItem, true,p);
+
+                    Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
+                    Uri resultUri =  mContext.getContentResolver().insert(contentUri, UTils.getContentValuesOfMovie(movieItem));
+                    Log.d(TAG,"Fav : "+resultUri.toString());
+                    Log.d(TAG,String .valueOf(new DatabaseHandler(mContext).getMovieItemsCount(DatabaseHandler.TABLE_FAV_MOVIES)));
+                 //   UTils.editMovieFav(movieItem, true,p);
                 }
 
-                if(MainActivity.twoPane){
+                MainActivity.moviesRViewAdapter.notifyDataSetChanged();
+               /* if(MainActivity.twoPane){
                     MainActivity.moviesRViewAdapter.notifyDataSetChanged();
-                }
+                }*/
             }
         });
 

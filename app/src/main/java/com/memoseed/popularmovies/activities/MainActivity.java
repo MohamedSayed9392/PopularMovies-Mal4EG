@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.memoseed.popularmovies.AppParameters;
 import com.memoseed.popularmovies.R;
+import com.memoseed.popularmovies.database.DatabaseHandler;
 import com.memoseed.popularmovies.utils.UTils;
 import com.memoseed.popularmovies.adapter.MoviesRViewAdapter;
 import com.memoseed.popularmovies.model.MovieItem;
@@ -54,11 +55,14 @@ public class MainActivity extends AppCompatActivity {
     public static FrameLayout item_detail_container;
 
     String urlPopular, urlTopRated;
+    public DatabaseHandler databaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        databaseHandler = new DatabaseHandler(this);
 
         if (findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(UTils.favourite){
             setTitle(getString(R.string.Fav_title));
-            moviesRViewAdapter.resetMovies(UTils.getListMovies("fav_list",p));
+            moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_FAV_MOVIES));
         } else if (UTils.pop_movies) {
             getMovies(urlPopular, true);
         } else if (UTils.top_rated) {
@@ -140,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             case R.id.action_fav:
-                moviesRViewAdapter.resetMovies(UTils.getListMovies("fav_list",p));
+                moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_FAV_MOVIES));
                 UTils.favourite = true;
                 setTitle(getString(R.string.Fav_title));
 
@@ -165,14 +169,16 @@ public class MainActivity extends AppCompatActivity {
     private void getMovies(String url, final boolean popular) {
 
         UTils.favourite = false;
-
+        final String TABLE;
         //get Cashed
         if (popular) {
             setTitle(getResources().getString(R.string.Popular_title));
-            moviesRViewAdapter.resetMovies(UTils.getListMovies("popular_list",p));
+            TABLE = DatabaseHandler.TABLE_POPULAR_MOVIES;
+            moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_POPULAR_MOVIES));
         } else {
             setTitle(getResources().getString(R.string.Top_title));
-            moviesRViewAdapter.resetMovies(UTils.getListMovies("top_rated_list",p));
+            TABLE = DatabaseHandler.TABLE_TOP_MOVIES;
+            moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(DatabaseHandler.TABLE_TOP_MOVIES));
         }
 
         //get Online
@@ -183,18 +189,13 @@ public class MainActivity extends AppCompatActivity {
                 public void onResponse(String response) {
                     Log.d(TAG, response);
                     UTils.hideProgressDialog(pD);
-                    List<MovieItem> tempList = new ArrayList<>();
                     try {
                         JSONArray results = (new JSONObject(response)).getJSONArray("results");
+                        databaseHandler.dropTable(TABLE);
                         for (int i = 0; i < results.length(); i++) {
-                            tempList.add((new GsonBuilder().create().fromJson(results.getJSONObject(i).toString(), MovieItem.class)));
-                        }
-                        moviesRViewAdapter.resetMovies(tempList);
-                        if (popular) {
-                            UTils.saveListMovies(listMovies, "popular_list",p);
-                        } else {
-                            UTils.saveListMovies(listMovies, "top_rated_list",p);
-                        }
+                            databaseHandler.addMovieItem(new GsonBuilder().create().fromJson(results.getJSONObject(i).toString(), MovieItem.class),TABLE);
+                         }
+                        moviesRViewAdapter.resetMovies(databaseHandler.getAllMovieItems(TABLE));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

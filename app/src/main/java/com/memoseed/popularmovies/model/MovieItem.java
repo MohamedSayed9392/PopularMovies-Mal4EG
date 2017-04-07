@@ -9,24 +9,17 @@ import java.util.List;
  * Created by Mohamed Sayed on 7/30/2016.
  */
 public class MovieItem implements Serializable {
-    @SerializedName("poster_path")
     String poster_path;
-    @SerializedName("backdrop_path")
     String backdrop_path;
-    @SerializedName("overview")
     String overview;
-    @SerializedName("release_date")
     String release_date;
-    @SerializedName("id")
     String id;
-    @SerializedName("title")
     String title;
-    @SerializedName("popularity")
+    String type;
     double popularity;
-    @SerializedName("vote_average")
     double vote_average;
 
-    public MovieItem(String id,String overview,double popularity,String poster_path,String backdrop_path,String release_date,String title,double vote_average ) {
+    public MovieItem(String id, String title,String poster_path, String backdrop_path, String overview, String release_date, String type,double popularity,  double vote_average) {
         this.backdrop_path = backdrop_path;
         this.id = id;
         this.overview = overview;
@@ -34,6 +27,7 @@ public class MovieItem implements Serializable {
         this.poster_path = poster_path;
         this.release_date = release_date;
         this.title = title;
+        this.type = type;
         this.vote_average = vote_average;
     }
 
@@ -52,7 +46,6 @@ public class MovieItem implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
-
 
     public String getOverview() {
         return overview;
@@ -92,6 +85,14 @@ public class MovieItem implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public double getVote_average() {

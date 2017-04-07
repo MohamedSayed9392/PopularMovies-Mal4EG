@@ -2,6 +2,7 @@ package com.memoseed.popularmovies.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import com.memoseed.popularmovies.AppParameters;
 import com.memoseed.popularmovies.R;
 import com.memoseed.popularmovies.activities.MainActivity;
+import com.memoseed.popularmovies.database.DatabaseHandler;
+import com.memoseed.popularmovies.database.FavouriteContentProvider;
 import com.memoseed.popularmovies.fragments.MovieDetailFragment;
 import com.memoseed.popularmovies.activities.MovieActivityContainer;
 import com.memoseed.popularmovies.model.MovieItem;
@@ -37,12 +40,10 @@ public class MoviesRViewAdapter extends RecyclerView.Adapter<MoviesRViewAdapter.
     private List<MovieItem> listMovies;
     Context con;
     String TAG = this.getClass().getSimpleName();
-    AppParameters p;
 
     public MoviesRViewAdapter(Context con, List<MovieItem> listMovies) {
         this.listMovies = listMovies;
         this.con = con;
-        p = new AppParameters(con);
     }
 
 
@@ -87,22 +88,27 @@ public class MoviesRViewAdapter extends RecyclerView.Adapter<MoviesRViewAdapter.
         });
 
         holder.checkFav.setOnCheckedChangeListener(null);
-        if(p.getBoolean(movie.getId(),false)){
+        if(((MainActivity)con).databaseHandler.isMovieFavouriteExist(movie.getId())){
             holder.checkFav.setChecked(true);
         }else{
             holder.checkFav.setChecked(false);
         }
 
-        Log.d(TAG,Boolean.toString(p.getBoolean(movie.getId(),false)));
 
         holder.checkFav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                p.setBoolean(isChecked,movie.getId());
                 if(isChecked){
-                    UTils.editMovieFav(movie,true,p);
+                    Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
+                    int resultUri =  con.getContentResolver().delete(contentUri, "id = ?", new String[] { String.valueOf(movie.getId()) });
+                    Log.d(TAG,"Fav : "+String.valueOf(resultUri));
+                    Log.d(TAG,String .valueOf(new DatabaseHandler(con).getMovieItemsCount(DatabaseHandler.TABLE_FAV_MOVIES)));
                 }else{
-                    UTils.editMovieFav(movie,false,p);
+                    Uri contentUri = Uri.withAppendedPath(FavouriteContentProvider.CONTENT_URI, DatabaseHandler.TABLE_FAV_MOVIES);
+                    Uri resultUri =  con.getContentResolver().insert(contentUri, UTils.getContentValuesOfMovie(movie));
+                    Log.d(TAG,"Fav : "+resultUri.toString());
+                    Log.d(TAG,String .valueOf(new DatabaseHandler(con).getMovieItemsCount(DatabaseHandler.TABLE_FAV_MOVIES)));
+
                     if(UTils.favourite){
                         listMovies.remove(movie);
                         notifyDataSetChanged();

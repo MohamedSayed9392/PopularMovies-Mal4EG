@@ -2,6 +2,7 @@ package com.memoseed.popularmovies.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -86,7 +87,7 @@ public class UTils {
         }
         return orientation;
     }
-
+/*
     public static void saveListMovies(List<MovieItem> list, String saveName, AppParameters p) {
         Type listsType = new TypeToken<List<MovieItem>>() {}.getType();
         Gson gson = new Gson();
@@ -120,8 +121,23 @@ public class UTils {
             }
         }
         saveListMovies(list, "fav_list",p);
-    }
+    }*/
 
+    public static ContentValues getContentValuesOfMovie(MovieItem movieItem){
+
+        ContentValues initialValues = new ContentValues();
+        initialValues.put("id",movieItem.getId());
+        initialValues.put("title", movieItem.getTitle());
+        initialValues.put("poster_path", movieItem.getPoster_path());
+        initialValues.put("backdrop_path", movieItem.getBackdrop_path());
+        initialValues.put("overview", movieItem.getOverview());
+        initialValues.put("release_date", movieItem.getRelease_date());
+        initialValues.put("type", movieItem.getType());
+        initialValues.put("popularity", movieItem.getPopularity());
+        initialValues.put("vote_average", movieItem.getVote_average());
+
+        return initialValues;
+    }
 
 
 }
